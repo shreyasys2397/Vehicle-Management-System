@@ -89,7 +89,7 @@ This project is hosted using **GitHub Pages**.
 
 Live URL:
 
-https://shreyasys2397.github.io/AngularJS-Project/
+https://shreyasys2397.github.io/Vehicle-Management-System/
 
 ## 🔮 Future Enhancements
 
