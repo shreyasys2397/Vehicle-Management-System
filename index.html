@@ -296,14 +296,16 @@
 
 // Create AngularJS Application
 var app = angular.module("vehicleApp", []);
-    $scope.currentYear = new Date().getFullYear();
 
 // Vehicle Controller
 app.controller("vehicleController", function($scope, $http) {
 
+    // Set current year
+    $scope.currentYear = new Date().getFullYear();
+
     var SUPABASE_URL = "https://hxixwnqtczhusfakvulx.supabase.co";
 
-var SUPABASE_KEY = "sb_publishable_MSrYpEBXRkQRRQB1-FafTg_sV1ur8cz";
+    var SUPABASE_KEY = "sb_publishable_MSrYpEBXRkQRRQB1-FafTg_sV1ur8cz";
 
 var API_URL = SUPABASE_URL + "/rest/v1/vehicles";
 
@@ -398,7 +400,7 @@ $scope.saveVehicle = function() {
 
     if (!data.number || !data.name || !data.owner ||
         !Number.isInteger(data.model) ||
-        data.model < 1900 || data.model > 2100) {
+        data.model < 1900 || data.model > $scope.currentYear) {
 
         $scope.error = "Please enter valid vehicle details.";
         return;
