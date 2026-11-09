@@ -191,7 +191,7 @@
                    placeholder="Manufacturing Year"
                    ng-model="vehicle.model"
                    min="1900"
-                   max="2100"
+                   max="{{currentYear}}"
                    step="1"
                    required>
         </div>
@@ -296,6 +296,7 @@
 
 // Create AngularJS Application
 var app = angular.module("vehicleApp", []);
+    $scope.currentYear = new Date().getFullYear();
 
 // Vehicle Controller
 app.controller("vehicleController", function($scope, $http) {
