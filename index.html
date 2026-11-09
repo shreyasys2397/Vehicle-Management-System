@@ -10,6 +10,9 @@
 
     <!-- AngularJS -->
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@3.0.4/dist/jspdf.umd.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@5.0.7/dist/jspdf.plugin.autotable.min.js"></script>
 
     <style>
         body {
@@ -277,6 +280,15 @@
         </tbody>
 
     </table>
+    <br>
+    <button
+    type="button"
+    ng-click="downloadVehiclesPDF()"
+    class="pdf-download-btn">
+
+    Download Vehicle Details
+
+</button>
 
 </div>
 
@@ -548,6 +560,79 @@ $scope.deleteVehicle = function(id) {
         $scope.success = "";
 
     };
+
+    // DOWNLOAD VEHICLE DETAILS AS PDF
+
+$scope.downloadVehiclesPDF = function() {
+
+    if (!$scope.vehicles || $scope.vehicles.length === 0) {
+        alert("No vehicle records available!");
+        return;
+    }
+
+    if (!window.jspdf || !window.jspdf.jsPDF) {
+        alert("PDF library not loaded. Please refresh the page.");
+        return;
+    }
+
+    var doc = new window.jspdf.jsPDF('l', 'mm', 'a4');
+
+    doc.setFontSize(18);
+
+    doc.text("Vehicle Management System", 14, 15);
+
+    doc.setFontSize(11);
+
+    doc.text(
+        "Vehicle Details Report",
+        14,
+        23
+    );
+
+    var rows = $scope.vehicles.map(function(v) {
+
+        return [
+            v.id || "",
+            v.number || "",
+            v.name || "",
+            v.type || "",
+            v.owner || "",
+            v.model || ""
+        ];
+
+    });
+
+    doc.autoTable({
+
+        startY: 30,
+
+        head: [[
+            "ID",
+            "Vehicle Number",
+            "Vehicle Name",
+            "Type",
+            "Owner",
+            "Manufacturing Year"
+        ]],
+
+        body: rows,
+
+        theme: "grid",
+
+        styles: {
+            fontSize: 10,
+            cellPadding: 4
+        },
+
+        headStyles: {
+            fillColor: [40, 65, 125]
+        }
+
+    });
+
+    doc.save("Vehicle_Details.pdf");
+
+};
 
 });
 
