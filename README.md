@@ -4,7 +4,7 @@ A web-based Vehicle Management System developed using **HTML, CSS, JavaScript, A
 
 ## 🌐 Live Demo
 
-**[View Vehicle Management System](https://shreyasys2397.github.io/AngularJS-Project/)**
+**[View Vehicle Management System](https://shreyasys2397.github.io/Vehicle-Management-System/)**
 
 ## 📌 Project Overview
 
