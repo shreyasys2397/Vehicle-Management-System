@@ -1,645 +1,504 @@
-
 <!DOCTYPE html>
 <html lang="en" ng-app="vehicleApp">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehicle Management System</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;500;600&family=Barlow+Condensed:wght@600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/angular.js/1.8.3/angular.min.js"></script>
+<style>
+[ng-cloak]{display:none!important}
+:root{--asphalt:#1d2227;--line:#f2b705;--paper:#f4f5f2;--card:#fff;--steel:#5a6670;--rule:#dcdfdb;--ok:#1f7a4d;--bad:#b3261e;--r:6px}
+*{box-sizing:border-box}
+body{margin:0;font-family:Barlow,Arial,sans-serif;background:var(--paper);color:var(--asphalt);line-height:1.5}
+h1,h2,h3{font-family:'Barlow Condensed',Arial,sans-serif;margin:0}
+:focus-visible{outline:3px solid var(--line);outline-offset:2px}
 
-    <title>Vehicle Management System</title>
+.nav{background:var(--asphalt);position:sticky;top:0;z-index:10;border-bottom:4px solid var(--line)}
+.nav-in{max-width:1100px;margin:auto;display:flex;align-items:center;gap:8px;padding:0 20px;flex-wrap:wrap}
+.brand{font:700 24px 'Barlow Condensed',Arial;color:#fff;padding:14px 20px 14px 0;margin-right:auto}
+.brand b{color:var(--line)}
+.tabs{display:flex;gap:2px}
+.tab{background:none;color:#c9d0d5;border:0;padding:16px;font:500 16px Barlow,Arial;cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-4px}
+.tab span{margin-right:6px;opacity:.8}
+.tab:hover{color:#fff}
+.tab.active{color:#fff;border-bottom-color:var(--line)}
+.menu-btn{display:none;background:none;border:1px solid #4a545c;color:#fff;border-radius:var(--r);padding:8px 12px;font:500 15px Barlow}
 
-    <!-- AngularJS -->
-    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.3/angular.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jspdf@3.0.4/dist/jspdf.umd.min.js"></script>
+main{max-width:1100px;margin:auto;padding:28px 20px 60px}
+.page-head{display:flex;justify-content:space-between;align-items:end;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+.page-head h2{font-size:34px}
+.page-head p{margin:0;color:var(--steel)}
 
-<script src="https://cdn.jsdelivr.net/npm/jspdf-autotable@5.0.7/dist/jspdf.plugin.autotable.min.js"></script>
+.btn{background:var(--asphalt);color:#fff;border:0;border-radius:var(--r);padding:10px 18px;font:600 15px Barlow,Arial;cursor:pointer}
+.btn:hover{background:#000}
+.btn.primary{background:var(--line);color:var(--asphalt)}
+.btn.primary:hover{background:#ffc928}
+.btn.ghost{background:none;color:var(--asphalt);border:1px solid var(--rule)}
+.btn.ghost:hover{background:#eceee9}
+.btn.sm{padding:6px 12px;font-size:14px}
+.btn.danger{background:none;color:var(--bad);border:1px solid #e3b7b4}
+.btn.danger:hover{background:#fbeceb}
+.btn.solid-danger{background:var(--bad)}
+.btn:disabled{opacity:.5;cursor:not-allowed}
+input,select{font:400 16px Barlow,Arial;padding:10px 12px;border:1px solid #b9bfba;border-radius:var(--r);background:#fff;width:100%}
+label{display:block;font-weight:600;font-size:14px;margin-bottom:4px}
 
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            background: #f2f2f2;
-            margin: 0;
-            padding: 20px;
-        }
+.notice{background:#fff6d6;border:1px solid #ecd37a;border-radius:var(--r);padding:10px 14px;margin-bottom:16px}
+.toasts{position:fixed;top:78px;right:16px;z-index:30;display:flex;flex-direction:column;gap:8px;max-width:340px}
+.toast{padding:12px 16px;border-radius:var(--r);font-weight:500;box-shadow:0 4px 14px rgba(0,0,0,.18);background:var(--asphalt);color:#fff;border-left:5px solid var(--ok)}
+.toast.err{border-left-color:var(--bad)}
 
-        .container {
-            width: 90%;
-            margin: auto;
-            background: white;
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 0 10px gray;
-        }
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;margin-bottom:22px}
+.stat{background:var(--card);border:1px solid var(--rule);border-left:5px solid var(--line);border-radius:var(--r);padding:14px 16px}
+.stat .n{font:700 42px/1 'Barlow Condensed',Arial}
+.stat .l{color:var(--steel);font-size:14px;margin-top:4px}
+.grid2{display:grid;grid-template-columns:1.2fr 1fr;gap:18px}
+.panel{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);padding:20px}
+.panel h3{font-size:22px;margin-bottom:14px}
+.bar-row{display:grid;grid-template-columns:70px 1fr 28px;align-items:center;gap:10px;margin:10px 0}
+.bar{height:14px;background:#eceee9;border-radius:3px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--asphalt);transition:width .4s}
+.recent{list-style:none;margin:0;padding:0}
+.recent li{display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--rule);cursor:pointer}
+.recent li:hover{background:#faf9ef}
+.recent li:last-child{border:0}
+.recent small{color:var(--steel);display:block}
+.plate{font:600 14px ui-monospace,Consolas,monospace;background:#fff;border:2px solid var(--asphalt);border-radius:4px;padding:1px 7px;white-space:nowrap;align-self:center}
 
-        h1, h2 {
-            color: #263b75;
-        }
+.toolbar{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.toolbar .grow{flex:1 1 260px}
+.toolbar select{width:150px}
+.tbl-wrap{background:var(--card);border:1px solid var(--rule);border-radius:var(--r);overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:700px}
+th{text-align:left;font-size:14px;color:var(--steel);font-weight:600;padding:0;border-bottom:2px solid var(--asphalt);white-space:nowrap}
+th button{all:unset;cursor:pointer;display:block;padding:12px 14px;width:100%}
+th button:hover{color:var(--asphalt)}
+th button:focus-visible{outline:3px solid var(--line);outline-offset:-3px}
+td{padding:12px 14px;border-bottom:1px solid var(--rule)}
+tr:last-child td{border-bottom:0}
+tbody tr:hover{background:#faf9ef}
+.type{display:inline-block;font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px;background:#eceee9}
+.st{display:inline-block;font-size:13px;font-weight:600;padding:2px 10px;border-radius:99px}
+.st.Active{background:#e6f4ec;color:var(--ok)}
+.st.In-Service{background:#fff1cc;color:#7a5600}
+.st.Retired{background:#e7e9e8;color:var(--steel)}
+.actions{white-space:nowrap;text-align:right}
+.actions .btn{margin-left:6px}
+.empty{text-align:center;color:var(--steel);padding:34px 14px}
+.pager{display:flex;justify-content:space-between;align-items:center;margin-top:14px;gap:10px;flex-wrap:wrap;color:var(--steel)}
 
-        h1 {
-            text-align: center;
-        }
+.form{max-width:640px}
+.fields{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.fields .full{grid-column:1/-1}
+.row{display:flex;gap:10px;flex-wrap:wrap}
 
-        .form-group {
-            margin: 12px 0;
-        }
+.scrim{position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:40;padding:20px}
+.modal{background:#fff;border-radius:var(--r);padding:24px;max-width:420px;width:100%}
+.modal h3{font-size:24px;margin-bottom:8px}
+.modal .row{justify-content:flex-end;margin-top:20px}
 
-        input, select {
-            padding: 10px;
-            width: 95%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-        }
-
-        button {
-            padding: 10px 18px;
-            border: none;
-            border-radius: 5px;
-            color: white;
-            background: #263b75;
-            cursor: pointer;
-            margin: 5px;
-        }
-
-        button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .delete {
-            background: #dc3545;
-        }
-
-        .edit {
-            background: #198754;
-        }
-
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        th, td {
-            border: 1px solid #ddd;
-            padding: 12px;
-            text-align: center;
-        }
-
-        th {
-            background: #263b75;
-            color: white;
-        }
-
-        tr:nth-child(even) {
-            background: #f2f2f2;
-        }
-
-        .search {
-            width: 95%;
-            margin-top: 15px;
-        }
-
-        .count {
-            background: #e8edff;
-            padding: 12px;
-            margin-top: 15px;
-            border-radius: 5px;
-        }
-
-        .message {
-            text-align: center;
-            color: red;
-        }
-
-        .success {
-            text-align: center;
-            color: green;
-        }
-
-        .empty {
-            text-align: center;
-            padding: 15px;
-        }
-    </style>
+@media(max-width:760px){
+ .menu-btn{display:block}
+ .tabs{display:none;width:100%;flex-direction:column;padding-bottom:10px}
+ .tabs.open{display:flex}
+ .tab{text-align:left;border-bottom:0;border-left:3px solid transparent;margin:0;padding:12px 14px}
+ .tab.active{border-left-color:var(--line)}
+ .grid2,.fields{grid-template-columns:1fr}
+ .brand{padding-right:0}
+ .toasts{left:16px;right:16px;max-width:none}
+}
+@media(prefers-reduced-motion:reduce){*{transition:none!important}}
+</style>
 </head>
 
-<body ng-controller="vehicleController">
+<body ng-controller="vehicleController" ng-cloak>
 
-<div class="container">
+<header class="nav">
+  <div class="nav-in">
+    <div class="brand">Vehicle<b>MS</b></div>
+    <button class="menu-btn" ng-click="menuOpen=!menuOpen" aria-expanded="{{menuOpen}}">Menu</button>
+    <nav class="tabs" ng-class="{open:menuOpen}" aria-label="Main">
+      <button class="tab" ng-class="{active:tab==='dashboard'}" ng-click="go('dashboard')"><span>▦</span>Dashboard</button>
+      <button class="tab" ng-class="{active:tab==='vehicles'}"  ng-click="go('vehicles')"><span>☰</span>Vehicles</button>
+      <button class="tab" ng-class="{active:tab==='form'}"      ng-click="go('form')"><span>＋</span>{{editMode ? 'Edit vehicle' : 'Add vehicle'}}</button>
+    </nav>
+  </div>
+</header>
 
-    <h1>Vehicle Management System</h1>
+<div class="toasts" aria-live="polite">
+  <div class="toast" ng-class="{err:t.err}" ng-repeat="t in toasts">{{t.msg}}</div>
+</div>
 
-    <!-- Total Vehicle Count -->
-    <div class="count">
-        <h3>Total Vehicles: {{vehicles.length}}</h3>
+<main>
+
+  <p class="notice" ng-if="demo" role="status"><b>Demo mode.</b> The database couldn't be reached, so you're seeing sample vehicles. Changes stay in this browser tab and aren't saved.</p>
+  <p ng-if="loading" style="color:var(--steel)">Loading vehicle records…</p>
+
+  <!-- DASHBOARD -->
+  <section ng-if="tab==='dashboard'">
+    <div class="page-head">
+      <div><h2>Dashboard</h2><p>Your fleet at a glance.</p></div>
+      <button class="btn primary" ng-click="newVehicle()">Add vehicle</button>
     </div>
 
-    <!-- Loading Message -->
-    <p ng-if="loading" class="success">
-        Loading vehicle records...
-    </p>
+    <div class="stats">
+      <div class="stat"><div class="n">{{vehicles.length}}</div><div class="l">Total vehicles</div></div>
+      <div class="stat" ng-repeat="t in types"><div class="n">{{countOf(t)}}</div><div class="l">{{t}}s</div></div>
+      <div class="stat"><div class="n">{{statusCount('In Service')}}</div><div class="l">In service</div></div>
+      <div class="stat"><div class="n">{{avgAge()}}</div><div class="l">Average age (years)</div></div>
+    </div>
 
-    <!-- Error Message -->
-    <p class="message" ng-if="error">
-        {{error}}
-    </p>
-
-    <!-- Success Message -->
-    <p class="success" ng-if="success">
-        {{success}}
-    </p>
-
-    <!-- Vehicle Form -->
-    <h2>{{editMode ? 'Update Vehicle' : 'Add New Vehicle'}}</h2>
-
-    <form ng-submit="saveVehicle()" novalidate>
-
-        <div class="form-group">
-            <input type="text"
-                   placeholder="Vehicle Number"
-                   ng-model="vehicle.number"
-                   required>
+    <div class="grid2">
+      <div class="panel">
+        <h3>Fleet by type</h3>
+        <div class="bar-row" ng-repeat="t in types">
+          <span>{{t}}</span>
+          <div class="bar"><i ng-style="{width: pct(t)+'%'}"></i></div>
+          <span>{{countOf(t)}}</span>
         </div>
+        <p class="empty" ng-if="!vehicles.length">No vehicles yet. Add your first one to see the breakdown.</p>
+      </div>
+      <div class="panel">
+        <h3>Recently added</h3>
+        <ul class="recent">
+          <li ng-repeat="v in recent()" ng-click="editVehicle(v)" title="Edit {{v.number}}">
+            <div>{{v.name}}<small>{{v.owner}} · {{v.type}}, {{v.model}}</small></div>
+            <span class="plate">{{v.number}}</span>
+          </li>
+        </ul>
+        <p class="empty" ng-if="!vehicles.length">Nothing to show yet.</p>
+      </div>
+    </div>
+  </section>
 
-        <div class="form-group">
-            <input type="text"
-                   placeholder="Vehicle Name"
-                   ng-model="vehicle.name"
-                   required>
-        </div>
+  <!-- VEHICLES -->
+  <section ng-if="tab==='vehicles'">
+    <div class="page-head">
+      <div><h2>Vehicles</h2><p>{{total}} of {{vehicles.length}} shown</p></div>
+      <div class="row">
+        <button class="btn ghost" ng-click="exportCsv()" ng-disabled="!total">Export CSV</button>
+        <button class="btn primary" ng-click="newVehicle()">Add vehicle</button>
+      </div>
+    </div>
 
-        <div class="form-group">
-            <select ng-model="vehicle.type" required>
-                <option value="">Select Vehicle Type</option>
-                <option value="Car">Car</option>
-                <option value="Bike">Bike</option>
-                <option value="Truck">Truck</option>
-                <option value="Bus">Bus</option>
-            </select>
-        </div>
+    <div class="toolbar">
+      <input class="grow" type="search" ng-model="q.text" aria-label="Search vehicles"
+             placeholder="Search by number, name, type, owner, year or status">
+      <select ng-model="q.type" aria-label="Filter by type">
+        <option value="">All types</option>
+        <option ng-repeat="t in types" value="{{t}}">{{t}}</option>
+      </select>
+      <select ng-model="q.status" aria-label="Filter by status">
+        <option value="">All statuses</option>
+        <option ng-repeat="s in statuses" value="{{s}}">{{s}}</option>
+      </select>
+    </div>
 
-        <div class="form-group">
-            <input type="text"
-                   placeholder="Owner Name"
-                   ng-model="vehicle.owner"
-                   required>
-        </div>
-
-        <div class="form-group">
-            <input type="number"
-                   placeholder="Manufacturing Year"
-                   ng-model="vehicle.model"
-                   min="1900"
-                   max="{{currentYear}}"
-                   step="1"
-                   required>
-        </div>
-
-        <button type="submit"
-                ng-disabled="loading || saving">
-            {{saving ? 'Saving...' :
-              (editMode ? 'Update Vehicle' : 'Add Vehicle')}}
-        </button>
-
-        <button type="button"
-                ng-click="clearForm()">
-            Clear
-        </button>
-
-    </form>
-
-    <!-- Vehicle List -->
-    <h2>Vehicle List</h2>
-
-    <!-- Search -->
-    <input class="search"
-           type="text"
-           placeholder="Search by vehicle number..."
-           ng-model="searchText">
-
-    <table>
-
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Vehicle Number</th>
-                <th>Vehicle Name</th>
-                <th>Type</th>
-                <th>Owner</th>
-                <th>Year</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th ng-repeat="c in cols" aria-sort="{{sort.key===c.key ? (sort.rev ? 'descending' : 'ascending') : 'none'}}">
+            <button ng-click="setSort(c.key)">{{c.label}}<span ng-if="sort.key===c.key"> {{sort.rev ? '▼' : '▲'}}</span></button>
+          </th>
+          <th></th>
+        </tr></thead>
         <tbody>
-
-            <tr ng-repeat="v in vehicles | filter:{number:searchText} track by v.id">
-
-                <td>{{v.id}}</td>
-
-                <td>{{v.number}}</td>
-
-                <td>{{v.name}}</td>
-
-                <td>{{v.type}}</td>
-
-                <td>{{v.owner}}</td>
-
-                <td>{{v.model}}</td>
-
-                <td>
-                    <button class="edit"
-                            ng-click="editVehicle(v)"
-                            ng-disabled="saving">
-                        Edit
-                    </button>
-
-                    <button class="delete"
-                            ng-click="deleteVehicle(v.id)"
-                            ng-disabled="saving">
-                        Delete
-                    </button>
-                </td>
-
-            </tr>
-
-            <tr ng-if="!loading && vehicles.length === 0">
-                <td colspan="7" class="empty">
-                    No vehicles available
-                </td>
-            </tr>
-
-            <tr ng-if="!loading && vehicles.length > 0 &&
-                       (vehicles | filter:{number:searchText}).length === 0">
-                <td colspan="7" class="empty">
-                    No matching vehicles found
-                </td>
-            </tr>
-
+          <tr ng-repeat="v in rows track by v.id">
+            <td><span class="plate">{{v.number}}</span></td>
+            <td>{{v.name}}</td>
+            <td><span class="type">{{v.type}}</span></td>
+            <td>{{v.owner}}</td>
+            <td>{{v.model}}</td>
+            <td><span class="st {{statusOf(v).replace(' ','-')}}">{{statusOf(v)}}</span></td>
+            <td class="actions">
+              <button class="btn ghost sm" ng-click="editVehicle(v)" ng-disabled="saving">Edit</button>
+              <button class="btn danger sm" ng-click="askDelete(v)" ng-disabled="saving">Delete</button>
+            </td>
+          </tr>
+          <tr ng-if="!loading && !vehicles.length"><td colspan="7" class="empty">No vehicles yet. Use “Add vehicle” to create one.</td></tr>
+          <tr ng-if="!loading && vehicles.length && !total"><td colspan="7" class="empty">No vehicles match your search. Try fewer words or clear the filters.</td></tr>
         </tbody>
+      </table>
+    </div>
 
-    </table>
-    <br>
-    <button
-    type="button"
-    ng-click="downloadVehiclesPDF()"
-    class="pdf-download-btn">
+    <div class="pager" ng-if="pages > 1">
+      <span>Page {{page}} of {{pages}}</span>
+      <div class="row">
+        <button class="btn ghost sm" ng-click="setPage(page-1)" ng-disabled="page<=1">Previous</button>
+        <button class="btn ghost sm" ng-click="setPage(page+1)" ng-disabled="page>=pages">Next</button>
+      </div>
+    </div>
+  </section>
 
-    Download Vehicle Details
+  <!-- ADD / EDIT -->
+  <section ng-if="tab==='form'">
+    <div class="page-head"><h2>{{editMode ? 'Edit vehicle' : 'Add vehicle'}}</h2></div>
+    <form class="panel form" ng-submit="saveVehicle()" novalidate>
+      <div class="fields">
+        <div><label for="f-num">Vehicle number</label><input id="f-num" ng-model="vehicle.number" required></div>
+        <div><label for="f-name">Vehicle name</label><input id="f-name" ng-model="vehicle.name" required></div>
+        <div><label for="f-type">Type</label>
+          <select id="f-type" ng-model="vehicle.type" required>
+            <option value="">Select type</option>
+            <option ng-repeat="t in types" value="{{t}}">{{t}}</option>
+          </select></div>
+        <div><label for="f-status">Status</label>
+          <select id="f-status" ng-model="vehicle.status">
+            <option ng-repeat="s in statuses" value="{{s}}">{{s}}</option>
+          </select></div>
+        <div><label for="f-owner">Owner name</label><input id="f-owner" ng-model="vehicle.owner" required></div>
+        <div><label for="f-year">Manufacturing year</label><input id="f-year" type="number" min="1900" max="2100" step="1" ng-model="vehicle.model" required></div>
+      </div>
+      <div class="row">
+        <button class="btn primary" type="submit" ng-disabled="loading || saving">{{saving ? 'Saving…' : (editMode ? 'Save changes' : 'Add vehicle')}}</button>
+        <button class="btn ghost" type="button" ng-click="clearForm()">Clear</button>
+        <button class="btn ghost" type="button" ng-click="go('vehicles')">Cancel</button>
+      </div>
+    </form>
+  </section>
 
-</button>
+</main>
 
+<!-- Delete modal -->
+<div class="scrim" ng-if="toDelete" ng-click="toDelete=null">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="dlg-t" ng-click="$event.stopPropagation()">
+    <h3 id="dlg-t">Delete this vehicle?</h3>
+    <p>{{toDelete.number}} ({{toDelete.name}}) will be removed. This can't be undone.</p>
+    <div class="row">
+      <button class="btn ghost" ng-click="toDelete=null">Cancel</button>
+      <button class="btn solid-danger" ng-click="confirmDelete()" ng-disabled="saving">Delete vehicle</button>
+    </div>
+  </div>
 </div>
 
 <script>
-
-// Create AngularJS Application
 var app = angular.module("vehicleApp", []);
 
-// Vehicle Controller
-app.controller("vehicleController", function($scope, $http) {
+app.controller("vehicleController", function ($scope, $http, $q, $timeout) {
 
-    // Set current year
-    $scope.currentYear = new Date().getFullYear();
+  // ------------------------------------------------------------
+  // CONFIG: leave SUPABASE_URL empty to use JSON Server locally.
+  // For Supabase, paste your Project URL and publishable key.
+  // ------------------------------------------------------------
+  var SUPABASE_URL = "https://hxixwnqtczhusfakvulx.supabase.co";
+  var SUPABASE_KEY = "sb_publishable_MSrYpEBXRkQRRQB1-FafTg_sV1ur8cz";   // publishable / anon key
+  var JSON_SERVER  = "http://localhost:3001/vehicles";
+  var PAGE_SIZE = 10;
 
-    var SUPABASE_URL = "https://hxixwnqtczhusfakvulx.supabase.co";
+  var useSupabase = !!SUPABASE_URL;
+  var API = useSupabase ? SUPABASE_URL + "/rest/v1/vehicles" : JSON_SERVER;
+  var cfg = useSupabase ? { headers: { apikey: SUPABASE_KEY, Authorization: "Bearer " + SUPABASE_KEY } } : {};
+  function idUrl(id) {
+    return useSupabase ? API + "?id=eq." + encodeURIComponent(id) : API + "/" + encodeURIComponent(id);
+  }
 
-    var SUPABASE_KEY = "sb_publishable_MSrYpEBXRkQRRQB1-FafTg_sV1ur8cz";
+  // Sample data used in demo mode (copied from vehicles.json)
+  var SAMPLE = [
+    { id: "2", number: "KA09CD5678", name: "Honda Activa", type: "Bike", owner: "Arun", model: 2023, status: "Active" },
+    { id: "3", number: "KA09EF9012", name: "Volvo", type: "Bus", owner: "Suresh", model: 2021, status: "In Service" },
+    { id: "fE_CaLY", number: "KA11C0950", name: "Bharath Benz", type: "Bus", owner: "MIT Mysore", model: 2021, status: "Active" }
+  ];
 
-var API_URL = SUPABASE_URL + "/rest/v1/vehicles";
+  $scope.types = ["Car", "Bike", "Truck", "Bus"];
+  $scope.statuses = ["Active", "In Service", "Retired"];
+  $scope.cols = [
+    { key: "number", label: "Number" }, { key: "name", label: "Name" }, { key: "type", label: "Type" },
+    { key: "owner", label: "Owner" }, { key: "model", label: "Year" }, { key: "status", label: "Status" }
+  ];
+  $scope.tab = "dashboard";
+  $scope.menuOpen = false;
+  $scope.vehicles = [];
+  $scope.rows = [];
+  $scope.total = 0;
+  $scope.page = 1;
+  $scope.pages = 1;
+  $scope.sort = { key: "number", rev: false };
+  $scope.q = { text: "", type: "", status: "" };
+  $scope.vehicle = {};
+  $scope.editMode = false;
+  $scope.loading = true;
+  $scope.saving = false;
+  $scope.demo = false;
+  $scope.toDelete = null;
+  $scope.toasts = [];
 
-var API_HEADERS = {
-    "apikey": SUPABASE_KEY,
-    "Authorization": "Bearer " + SUPABASE_KEY,
-    "Content-Type": "application/json"
-};
+  // ---------- helpers ----------
+  $scope.statusOf = function (v) { return v.status || "Active"; };
 
-    // Initialize variables
-    $scope.vehicles = [];
-    $scope.vehicle = {};
+  function toast(msg, err) {
+    var t = { msg: msg, err: !!err };
+    $scope.toasts.push(t);
+    $timeout(function () { var i = $scope.toasts.indexOf(t); if (i > -1) $scope.toasts.splice(i, 1); }, err ? 6000 : 3500);
+  }
 
-    $scope.editMode = false;
-    $scope.loading = true;
-    $scope.saving = false;
+  $scope.go = function (t) { $scope.tab = t; $scope.menuOpen = false; window.scrollTo(0, 0); };
+  $scope.newVehicle = function () { $scope.clearForm(); $scope.go("form"); };
 
-    $scope.error = "";
-    $scope.success = "";
-    $scope.searchText = "";
+  // ---------- dashboard ----------
+  $scope.countOf = function (t) { return $scope.vehicles.filter(function (v) { return v.type === t; }).length; };
+  $scope.statusCount = function (s) { return $scope.vehicles.filter(function (v) { return $scope.statusOf(v) === s; }).length; };
+  $scope.pct = function (t) { return $scope.vehicles.length ? Math.round(100 * $scope.countOf(t) / $scope.vehicles.length) : 0; };
+  $scope.avgAge = function () {
+    if (!$scope.vehicles.length) return "–";
+    var y = new Date().getFullYear(), s = 0;
+    $scope.vehicles.forEach(function (v) { s += y - Number(v.model); });
+    return (s / $scope.vehicles.length).toFixed(1);
+  };
+  $scope.recent = function () { return $scope.vehicles.slice(-5).reverse(); };
 
-    
+  // ---------- search (every field), sort, pagination ----------
+  function matchesQuery(v) {
+    if ($scope.q.type && v.type !== $scope.q.type) return false;
+    if ($scope.q.status && $scope.statusOf(v) !== $scope.q.status) return false;
+    var terms = ($scope.q.text || "").toLowerCase().split(/\s+/).filter(Boolean);
+    if (!terms.length) return true;
+    var hay = [v.number, v.name, v.type, v.owner, v.model, $scope.statusOf(v)].join(" ").toLowerCase();
+    return terms.every(function (t) { return hay.indexOf(t) > -1; });   // all words must match somewhere
+  }
 
-$scope.loadVehicles = function() {
-
-    $scope.loading = true;
-    $scope.error = "";
-
-    $http.get(API_URL, {
-        headers: API_HEADERS,
-        params: {
-            select: "*",
-            order: "name.asc"
-        }
-    })
-
-    .then(function(response) {
-
-        $scope.vehicles = response.data || [];
-
-        console.log("Vehicles loaded:", $scope.vehicles);
-
-    })
-
-    .catch(function(error) {
-
-        console.error("Loading Error:", error);
-
-        $scope.error = "Unable to load vehicle records.";
-
-    })
-
-    .finally(function() {
-
-        $scope.loading = false;
-
+  function filteredSorted() {
+    var k = $scope.sort.key, dir = $scope.sort.rev ? -1 : 1;
+    return $scope.vehicles.filter(matchesQuery).sort(function (a, b) {
+      var x = k === "status" ? $scope.statusOf(a) : a[k], y = k === "status" ? $scope.statusOf(b) : b[k];
+      if (k === "model") return (Number(x) - Number(y)) * dir;
+      return String(x).toLowerCase().localeCompare(String(y).toLowerCase()) * dir;
     });
+  }
 
-};
+  function refresh() {
+    var all = filteredSorted();
+    $scope.total = all.length;
+    $scope.pages = Math.max(1, Math.ceil(all.length / PAGE_SIZE));
+    if ($scope.page > $scope.pages) $scope.page = $scope.pages;
+    $scope.rows = all.slice(($scope.page - 1) * PAGE_SIZE, $scope.page * PAGE_SIZE);
+  }
 
+  $scope.setSort = function (k) {
+    if ($scope.sort.key === k) $scope.sort.rev = !$scope.sort.rev;
+    else { $scope.sort.key = k; $scope.sort.rev = false; }
+  };
+  $scope.setPage = function (p) { $scope.page = Math.min(Math.max(1, p), $scope.pages); };
 
+  $scope.$watchGroup(["q.text", "q.type", "q.status"], function () { $scope.page = 1; });
+  $scope.$watchGroup(["q.text", "q.type", "q.status", "sort.key", "sort.rev", "page"], refresh);
+  $scope.$watch("vehicles", refresh, true);
 
-    // Load records when application starts
-    $scope.loadVehicles();
+  // ---------- CSV export ----------
+  $scope.exportCsv = function () {
+    var cell = function (s) { return '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"'; };
+    var lines = [["Number", "Name", "Type", "Owner", "Year", "Status"].map(cell).join(",")];
+    filteredSorted().forEach(function (v) {
+      lines.push([v.number, v.name, v.type, v.owner, v.model, $scope.statusOf(v)].map(cell).join(","));
+    });
+    var a = document.createElement("a");
+    a.href = URL.createObjectURL(new Blob([lines.join("\n")], { type: "text/csv" }));
+    a.download = "vehicles.csv";
+    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+    toast("Exported " + $scope.total + " vehicles to CSV.");
+  };
 
+  // ---------- load ----------
+  $scope.loadVehicles = function () {
+    $scope.loading = true;
+    $http.get(API, cfg)
+      .then(function (r) {
+        if (Array.isArray(r.data)) { $scope.vehicles = r.data; $scope.demo = false; }
+        else throw new Error("bad format");
+      })
+      .catch(function (e) {
+        console.error(e);
+        $scope.vehicles = angular.copy(SAMPLE);
+        $scope.demo = true;
+      })
+      .finally(function () { $scope.loading = false; });
+  };
+  $scope.loadVehicles();
 
-    // --------------------------------
-    // 2. ADD OR UPDATE VEHICLE
-    // --------------------------------
+  // ---------- data layer (works for API or demo mode) ----------
+  function write(method, v) {
+    if ($scope.demo) {
+      var list = $scope.vehicles, i = list.findIndex(function (x) { return String(x.id) === String(v.id); });
+      if (method === "post") { v.id = "d" + Date.now(); list.push(v); }
+      else if (method === "put" && i > -1) list[i] = v;
+      else if (method === "delete" && i > -1) list.splice(i, 1);
+      return $q.resolve();
+    }
+    if (method === "post") {
+      if (useSupabase) v.id = Math.random().toString(36).slice(2, 9);   // TEXT ids in Supabase
+      else delete v.id;
+      return $http.post(API, v, cfg);
+    }
+    if (method === "put") return useSupabase ? $http.patch(idUrl(v.id), v, cfg) : $http.put(idUrl(v.id), v, cfg);
+    return $http.delete(idUrl(v.id), cfg);
+  }
+  function afterWrite() { if (!$scope.demo) $scope.loadVehicles(); }
 
-    
-$scope.saveVehicle = function() {
-
+  // ---------- add / update ----------
+  $scope.saveVehicle = function () {
     if ($scope.saving) return;
+    var d = angular.copy($scope.vehicle);
 
-    if (!$scope.vehicle.number ||
-        !$scope.vehicle.name ||
-        !$scope.vehicle.type ||
-        !$scope.vehicle.owner ||
-        !$scope.vehicle.model) {
+    if (!d.number || !d.name || !d.type || !d.owner || !d.model) { toast("Fill in all fields before saving.", true); return; }
+    d.number = String(d.number).trim().toUpperCase();
+    d.name = String(d.name).trim();
+    d.owner = String(d.owner).trim();
+    d.status = d.status || "Active";
+    if (!d.number || !d.name || !d.owner) { toast("Fields can't be blank.", true); return; }
 
-        $scope.error = "Please fill all the fields.";
-        return;
-    }
+    var yr = Number(d.model);
+    if (!Number.isInteger(yr) || yr < 1900 || yr > 2100) { toast("Enter a valid year between 1900 and 2100.", true); return; }
+    d.model = yr;
 
-    var data = angular.copy($scope.vehicle);
+    var dup = $scope.vehicles.some(function (v) { return v.number === d.number && String(v.id) !== String(d.id); });
+    if (dup) { toast("A vehicle with number " + d.number + " already exists.", true); return; }
 
-    data.number = data.number.trim();
-    data.name = data.name.trim();
-    data.owner = data.owner.trim();
-    data.model = Number(data.model);
-
-    if (!data.number || !data.name || !data.owner ||
-        !Number.isInteger(data.model) ||
-        data.model < 1900 || data.model > $scope.currentYear) {
-
-        $scope.error = "Please enter valid vehicle details.";
-        return;
-    }
-
+    var wasEdit = $scope.editMode;
     $scope.saving = true;
-    $scope.error = "";
-    $scope.success = "";
-
-    var request;
-
-    if ($scope.editMode) {
-
-        var id = data.id;
-        delete data.id;
-
-        request = $http.patch(
-            API_URL + "?id=eq." + encodeURIComponent(id),
-            data,
-            {
-                headers: Object.assign({}, API_HEADERS, {
-                    "Prefer": "return=representation"
-                })
-            }
-        );
-
-    } else {
-
-        delete data.id;
-
-        request = $http.post(
-            API_URL,
-            data,
-            {
-                headers: Object.assign({}, API_HEADERS, {
-                    "Prefer": "return=representation"
-                })
-            }
-        );
-
-    }
-
-    request
-
-    .then(function(response) {
-
-        $scope.success = $scope.editMode
-            ? "Vehicle updated successfully!"
-            : "Vehicle added successfully!";
-
+    write(wasEdit ? "put" : "post", d)
+      .then(function () {
+        toast(wasEdit ? "Vehicle updated." : "Vehicle added.");
         $scope.clearForm();
-        $scope.success = "Vehicle saved successfully!";
-        $scope.loadVehicles();
-
-    })
-
-    .catch(function(error) {
-
-        console.error("Save Error:", error);
-        $scope.error = "Unable to save vehicle. Check console.";
-
-    })
-
-    .finally(function() {
-
-        $scope.saving = false;
-
-    });
-
-};
-
-
-    // --------------------------------
-    // 3. EDIT VEHICLE
-    // --------------------------------
-
-    $scope.editVehicle = function(v) {
-
-        $scope.vehicle = angular.copy(v);
-
-        $scope.editMode = true;
-
-        $scope.error = "";
-        $scope.success = "";
-
-        // Scroll to form
-        window.scrollTo(0, 0);
-
-    };
-
-
-    // --------------------------------
-    // 4. DELETE VEHICLE
-    // --------------------------------
-
-    
-$scope.deleteVehicle = function(id) {
-
-    if ($scope.saving) return;
-
-    if (confirm("Are you sure you want to delete this vehicle?")) {
-
-        $scope.saving = true;
-        $scope.error = "";
-        $scope.success = "";
-
-        $http.delete(
-            API_URL + "?id=eq." + encodeURIComponent(id),
-            {
-                headers: API_HEADERS
-            }
-        )
-
-        .then(function() {
-
-            $scope.success = "Vehicle deleted successfully!";
-
-            if ($scope.editMode &&
-                String($scope.vehicle.id) === String(id)) {
-
-                $scope.clearForm();
-
-            }
-
-            $scope.loadVehicles();
-
-        })
-
-        .catch(function(error) {
-
-            console.error("Delete Error:", error);
-
-            $scope.error = "Unable to delete vehicle.";
-
-        })
-
-        .finally(function() {
-
-            $scope.saving = false;
-
-        });
-
-    }
-
-};
-
-
-
-    // --------------------------------
-    // 5. CLEAR FORM
-    // --------------------------------
-
-    $scope.clearForm = function() {
-
-        $scope.vehicle = {};
-
-        $scope.editMode = false;
-
-        $scope.error = "";
-        $scope.success = "";
-
-    };
-
-    // DOWNLOAD VEHICLE DETAILS AS PDF
-
-$scope.downloadVehiclesPDF = function() {
-
-    if (!$scope.vehicles || $scope.vehicles.length === 0) {
-        alert("No vehicle records available!");
-        return;
-    }
-
-    if (!window.jspdf || !window.jspdf.jsPDF) {
-        alert("PDF library not loaded. Please refresh the page.");
-        return;
-    }
-
-    var doc = new window.jspdf.jsPDF('l', 'mm', 'a4');
-
-    doc.setFontSize(18);
-
-    doc.text("Vehicle Management System", 14, 15);
-
-    doc.setFontSize(11);
-
-    doc.text(
-        "Vehicle Details Report",
-        14,
-        23
-    );
-
-    var rows = $scope.vehicles.map(function(v) {
-
-        return [
-            v.id || "",
-            v.number || "",
-            v.name || "",
-            v.type || "",
-            v.owner || "",
-            v.model || ""
-        ];
-
-    });
-
-    doc.autoTable({
-
-        startY: 30,
-
-        head: [[
-            "ID",
-            "Vehicle Number",
-            "Vehicle Name",
-            "Type",
-            "Owner",
-            "Manufacturing Year"
-        ]],
-
-        body: rows,
-
-        theme: "grid",
-
-        styles: {
-            fontSize: 10,
-            cellPadding: 4
-        },
-
-        headStyles: {
-            fillColor: [40, 65, 125]
-        }
-
-    });
-
-    doc.save("Vehicle_Details.pdf");
-
-};
-
+        afterWrite();
+        $scope.tab = "vehicles";
+      })
+      .catch(function (e) {
+        console.error(e);
+        toast(wasEdit ? "Couldn't update the vehicle. Try again." : "Couldn't add the vehicle. Try again.", true);
+      })
+      .finally(function () { $scope.saving = false; });
+  };
+
+  $scope.editVehicle = function (v) {
+    $scope.vehicle = angular.copy(v);
+    $scope.vehicle.status = $scope.statusOf(v);
+    $scope.editMode = true;
+    $scope.go("form");
+  };
+
+  // ---------- delete (modal) ----------
+  $scope.askDelete = function (v) { $scope.toDelete = v; };
+  $scope.confirmDelete = function () {
+    var v = $scope.toDelete;
+    if (!v || $scope.saving) return;
+    $scope.saving = true;
+    write("delete", v)
+      .then(function () {
+        toast("Vehicle deleted.");
+        if ($scope.editMode && String($scope.vehicle.id) === String(v.id)) $scope.clearForm();
+        afterWrite();
+      })
+      .catch(function (e) { console.error(e); toast("Couldn't delete the vehicle. Try again.", true); })
+      .finally(function () { $scope.saving = false; $scope.toDelete = null; });
+  };
+
+  $scope.clearForm = function () {
+    $scope.vehicle = { status: "Active" };
+    $scope.editMode = false;
+  };
+  $scope.clearForm();
 });
-
 </script>
-
 </body>
 </html>
